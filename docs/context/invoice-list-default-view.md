@@ -6,7 +6,7 @@ Last changed by AI: 2026-11-08 · run 1a41103a-5ecf-43ae-b05e-1421aea17a05 · fi
 
 ## Current view
 
-frontend/lib/invoices/list-view.ts is the single resolver for the Invoices list view (active | paid | all). invoiceView() defaults to 'all' for missing or unknown values. invoiceListUrl/invoiceEditUrl omit ?view only for the default 'all'; active and paid carry ?view=. app/invoices/page.tsx uses it to highlight the filter button and to filter (active = status != paid, paid = status = paid, all = no filter); app/invoices/[id]/edit/page.tsx uses it for the back link and login redirect. Bare /invoices links (nav, dashboard, not-found, action redirects) therefore open on All. Check: lib/invoices/list-view.test.ts. Limit: old bookmarks of bare /invoices now show All instead of Active.
+frontend/lib/invoices/list-view.ts is the single resolver for the Invoices list view (active | paid | all). invoiceView() defaults to 'all' for missing or unknown values. invoiceListUrl/invoiceEditUrl omit ?view only for the default 'all'; active and paid carry ?view=. app/invoices/page.tsx uses it to highlight the filter button and to filter (active = status != paid, paid = status = paid, all = no filter); app/invoices/[id]/edit/page.tsx uses it for the back link and login redirect. Bare /invoices links (nav, dashboard, not-found, action redirects) therefore open on All. Check: lib/invoices/list-view.test.ts. Limit: old bookmarks of bare /invoices now show All instead of Active. Revalidated 2026-11-23: unchanged by the public demo work.
 
 ## Lessons
 

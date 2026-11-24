@@ -1,0 +1,5 @@
+# Keep local secrets and tooling state out of CLI uploads; Vercel env vars are set in the project.
+.env*
+!.env.example
+supabase/.temp
+.playwright-mcp

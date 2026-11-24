@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
+import { demoDocumentGuard } from "@/lib/demo/demo-mode";
 import { documentFormat, invoiceDocumentBucket, maxDocumentBytes } from "@/lib/invoices/document";
 
 export async function POST(request: Request) {
@@ -14,6 +15,8 @@ export async function POST(request: Request) {
   const bytes = new Uint8Array(await file.arrayBuffer());
   const format = documentFormat(bytes);
   if (!format) return Response.json({ error: "Use a PDF, PNG, JPEG, WebP, or GIF file." }, { status: 415 });
+  const blocked = await demoDocumentGuard(bytes);
+  if (blocked) return blocked;
   const path = `${data.claims.sub}/${crypto.randomUUID()}.${format.extension}`;
   const { error } = await supabase.storage.from(invoiceDocumentBucket).upload(path, bytes, { contentType: format.mime, upsert: false });
   if (error) return Response.json({ error: "Could not store the invoice document. Please try again." }, { status: 500 });

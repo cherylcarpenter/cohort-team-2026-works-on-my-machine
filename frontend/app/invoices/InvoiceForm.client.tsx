@@ -16,6 +16,8 @@ import PropertyForm from "@/app/properties/PropertyForm.client";
 import InvoiceDocumentPreview from "./InvoiceDocumentPreview";
 import PaymentConfirmation from "./PaymentConfirmation.client";
 import InvoiceRecordActions from "./InvoiceRecordActions.client";
+import DemoBillPicker from "./DemoBillPicker.client";
+import type { DemoBillOption } from "@/lib/demo/demo-bills";
 import DemoPayment from "./DemoPayment.client";
 import type { PaymentView } from "./payment-actions";
 import styles from "./invoice-form.module.scss";
@@ -75,7 +77,7 @@ function paymentLink(value: string) {
   }
 }
 
-export function InvoiceFormClient({ vendors: vendorsProp, properties: propertiesProp, invoice, evaluation, document, paymentConfirmation, canViewHistory = false, demoPayment, returnHref = "/invoices" }: {
+export function InvoiceFormClient({ vendors: vendorsProp, properties: propertiesProp, invoice, evaluation, document, paymentConfirmation, canViewHistory = false, demoPayment, demoBills, returnHref = "/invoices" }: {
   vendors: VendorOption[];
   properties: Option[];
   invoice?: { id: string; fields: Fields };
@@ -84,6 +86,7 @@ export function InvoiceFormClient({ vendors: vendorsProp, properties: properties
   paymentConfirmation?: string | null;
   canViewHistory?: boolean;
   demoPayment?: { enabled: boolean; attempt: PaymentView | null };
+  demoBills?: DemoBillOption[];
   returnHref?: string;
 }) {
   const router = useRouter();
@@ -163,7 +166,10 @@ export function InvoiceFormClient({ vendors: vendorsProp, properties: properties
   }
 
   function selectFile(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
+    applyFile(event.target.files?.[0] ?? null);
+  }
+
+  function applyFile(file: File | null) {
     setSelectedFile(file ?? null);
     setPreviewType(file?.type ?? "");
     setPreviewUrl(file ? URL.createObjectURL(file) : "");
@@ -311,12 +317,14 @@ export function InvoiceFormClient({ vendors: vendorsProp, properties: properties
         error={document?.error}
       >
         {!invoice ? <>
+          {demoBills ? <DemoBillPicker bills={demoBills} disabled={extracting || saving}
+            onFile={applyFile} onError={(message) => setNotification({ color: "danger", message })} /> :
           <label className={`btn btn-outline-secondary ${styles.fileButton}`}>
             {selectedFile ? "Change file" : "Choose PDF or image"}
             <input ref={fileInputRef} className="visually-hidden" type="file"
               accept=".pdf,image/png,image/jpeg,image/webp,image/gif" disabled={extracting || saving}
               onChange={selectFile} aria-label="Choose invoice PDF or image" />
-          </label>
+          </label>}
           {selectedFile && <CButton color="secondary" type="button" disabled={extracting || saving}
             onClick={() => void extractDetails(selectedFile)}>{extracting ? "Reading invoice…" : "Retry extraction"}</CButton>}
           <p className="small mb-0">Complete invoices are saved automatically. Approval rules and vendor autopay settings determine whether payment starts.</p>

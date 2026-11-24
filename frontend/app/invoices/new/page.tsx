@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
+import { demoBillOptions, isDemoMode } from "@/lib/demo/demo-mode";
 import { InvoiceFormClient } from "../InvoiceForm.client";
 import NewInvoiceSession from "./NewInvoiceSession.client";
 import styles from "../invoice-form.module.scss";
@@ -38,5 +39,5 @@ async function NewInvoiceForm() {
   if (vendorResult.error) throw vendorResult.error;
   if (propertyResult.error) throw propertyResult.error;
 
-  return <NewInvoiceSession><InvoiceFormClient vendors={vendorResult.data} properties={propertyResult.data} /></NewInvoiceSession>;
+  return <NewInvoiceSession><InvoiceFormClient vendors={vendorResult.data} properties={propertyResult.data} demoBills={isDemoMode() ? demoBillOptions() : undefined} /></NewInvoiceSession>;
 }

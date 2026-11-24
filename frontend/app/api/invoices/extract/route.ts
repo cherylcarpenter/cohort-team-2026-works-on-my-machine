@@ -2,6 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import { extractInvoiceFromPdf } from "@/lib/invoices/extract-invoice";
 import { documentFormat, maxDocumentBytes } from "@/lib/invoices/document";
 import { extractWithFallback } from "@/lib/invoices/extraction";
+import { demoDocumentGuard } from "@/lib/demo/demo-mode";
 import { aiExtractionConfigured, extractInvoiceWithAi } from "@/lib/invoices/ai-extraction";
 
 // Leave time for auth, PDF parsing and the 120-second provider timeout.
@@ -35,6 +36,8 @@ export async function POST(request: Request) {
     if (!format) {
       return Response.json({ error: "Choose a PDF, PNG, JPEG, WebP, or GIF invoice." }, { status: 400 });
     }
+    const blocked = await demoDocumentGuard(bytes);
+    if (blocked) return blocked;
 
     const result = await extractWithFallback(bytes, format.mime, {
       parsePdf: extractInvoiceFromPdf,

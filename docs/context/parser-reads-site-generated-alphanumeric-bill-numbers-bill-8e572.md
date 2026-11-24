@@ -6,7 +6,7 @@ Last changed by AI: 2026-11-08 · run 09dce026-d9a6-4547-b5c5-7e010155a444 · fi
 
 ## Current view
 
-frontend/lib/invoices/invoice-parser.ts extracts the invoice number with ordered patterns: BILL-<alphanumeric containing a digit>(-suffix), then INV-, then a generic [A-Z]{2,}-\d{3,} fallback. Vendor demo sites generate hex bill ids (BILL-8E572D6D) and every site PDF has a 'Property PROP-001' header line, so if the BILL pattern misses, the fallback silently returns PROP-001 and Browser Use correctly refuses to pay. HEADER_SUFFIXES uses the same BILL pattern to strip ids from vendor lines (maple-junction layout). Checks: invoice-parser.test.ts uses real site PDF text; extract-invoice.test.ts covers the BILL-1001 fixtures. Limit: invoices saved before this fix keep PROP-001 until reopened and corrected.
+frontend/lib/invoices/invoice-parser.ts extracts the invoice number with ordered patterns: BILL-<alphanumeric containing a digit>(-suffix), then INV-, then a generic [A-Z]{2,}-\d{3,} fallback. Vendor demo sites generate hex bill ids (BILL-8E572D6D) and every site PDF has a 'Property PROP-001' header line, so if the BILL pattern misses, the fallback silently returns PROP-001 and Browser Use correctly refuses to pay. HEADER_SUFFIXES uses the same BILL pattern to strip ids from vendor lines (maple-junction layout). Checks: invoice-parser.test.ts uses real site PDF text; extract-invoice.test.ts covers the BILL-1001 fixtures. Limit: invoices saved before this fix keep PROP-001 until reopened and corrected. Revalidated 2026-11-23: the demo-mode allowlist sits in front of this parser in app/api/invoices/extract; with DEMO_MODE=true only the three sample PDFs reach it.
 
 ## Lessons
 

@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
+import { isDemoMode } from "@/lib/demo/demo-mode";
 import LoginForm from "./LoginForm.client";
 import { redirectTarget } from "./redirect-target";
 
@@ -27,5 +28,11 @@ async function Login({ searchParams }: Props) {
   const { data } = await supabase.auth.getClaims();
   if (data?.claims) redirect(next);
 
-  return <LoginForm next={next} />;
+  const hint = isDemoMode() ? process.env.DEMO_LOGIN_HINT?.trim() : "";
+  return (
+    <>
+      {hint && <div className="alert alert-info small" role="note">{hint}</div>}
+      <LoginForm next={next} />
+    </>
+  );
 }
